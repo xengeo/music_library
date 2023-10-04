@@ -27,3 +27,16 @@ def test_get_all_records(db_connection):
         Album(11, 'Fodder on My Wings', 1982, 4),
         Album(12, 'Ring Ring', 1973, 2)
     ]
+
+
+"""
+Test the find method returns an instance of the artist
+object for the specified id
+"""
+def test_find_returns_specified_album(db_connection):
+    db_connection.seed("seeds/music_library.sql")
+    repository = AlbumRepository(db_connection)
+
+    album = repository.find(3)
+
+    assert album == Album(3, 'Waterloo', 1974, 2)
