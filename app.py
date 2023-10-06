@@ -1,29 +1,44 @@
-from lib.database_connection import DatabaseConnection
+# file: app.py
+
 from lib.artist_repository import ArtistRepository
 from lib.album_repository import AlbumRepository
+from lib.database_connection import DatabaseConnection
 
+class Application():
+  def __init__(self):
+    self._connection = DatabaseConnection()
+    self._connection.connect()
+    self._connection.seed("seeds/music_library.sql")
 
-# Connect to the database
-connection = DatabaseConnection()
-connection.connect()
+  def run(self):
+    # "Runs" the terminal application.
+    # It might:
+    #   * Ask the user to enter some input
+    #   * Make some decisions based on that input
+    #   * Query the database
+    #   * Display some output
+    # We're going to print out the artists!
 
-# Seed with some seed data
-connection.seed("seeds/music_library.sql")
+    print("\nWelcome to the music library manager!")
+    print("\nWhat would you like to do?\n"
+          "  1 - List all albums\n"
+          "  2 - List all artists\n")
+    choice = input("Enter your choice: ")
 
-# Retrieve all artists
-artist_repository = ArtistRepository(connection)
-artists = artist_repository.all()
+    if choice == '1':
+        album_repository = AlbumRepository(self._connection)
+        albums = album_repository.all()
+        print("\nHere is the list of albums:")
+        for album in albums:
+           print(f" * {album.id} - {album.title}")
 
-# List them out
-for artist in artists:
-    print(artist)
+    if choice == '2':
+        artist_repository = ArtistRepository(self._connection)
+        artists = artist_repository.all()
+        print("\nHere is the list of artists:")
+        for artist in artists:
+            print(f"{artist.id}: {artist.name} ({artist.genre})")
 
-# Retrieve all albums
-album_repository =  AlbumRepository(connection)
-albums = album_repository.all()
-
-# List them out
-for album in albums:
-    print(album)
-
-print(album_repository.find(3))
+if __name__ == '__main__':
+    app = Application()
+    app.run()
